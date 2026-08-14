@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Neon Drift">
+  <defs>
+    <linearGradient id="b" x1="25" y1="12" x2="174" y2="185"><stop stop-color="#191D55"/><stop offset="1" stop-color="#040611"/></linearGradient>
+    <linearGradient id="r" x1="50" y1="36" x2="135" y2="163"><stop stop-color="#B7FFFF"/><stop offset=".5" stop-color="#45F4FF"/><stop offset="1" stop-color="#6174FF"/></linearGradient>
+    <linearGradient id="s" x1="110" y1="29" x2="155" y2="104"><stop stop-color="#FF99EA"/><stop offset="1" stop-color="#FF4FD8"/></linearGradient>
+  </defs>
+  <rect x="6" y="6" width="180" height="180" rx="43" fill="url(#b)"/>
+  <rect x="10" y="10" width="172" height="172" rx="39" fill="none" stroke="#45F4FF" stroke-opacity=".2"/>
+  <path d="m44 133 39-93h31L85 102h36l-42 61H43l35-49H44z" fill="url(#r)"/>
+  <path d="m110 31 45 36-30 3 26 37-60-47 32-4z" fill="url(#s)"/>
+  <path d="M35 171h123" stroke="#45F4FF" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
+</svg>

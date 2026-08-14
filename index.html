@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="theme-color" content="#080b1c" />
+    <meta
+      name="description"
+      content="Neon Drift: Skyline Rush — a fast, original three-lane 3D endless runner."
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Neon Drift" />
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
+    <link rel="icon" href="%BASE_URL%icons/neon-drift-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icons/neon-drift-icon-192.svg" />
+    <link rel="stylesheet" href="./src/styles/main.css" />
+    <title>Neon Drift: Skyline Rush</title>
+  </head>
+  <body>
+    <div id="app" class="app-shell" data-state="loading">
+      <canvas id="game-canvas" aria-label="Neon Drift 3D game"></canvas>
+      <div class="world-vignette" aria-hidden="true"></div>
+      <div class="speed-lines" aria-hidden="true"></div>
+
+      <section
+        id="loading-screen"
+        class="screen screen--loading is-active"
+        aria-labelledby="loading-title"
+      >
+        <div class="loading-ambient" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="loading-card glass-panel">
+          <div class="brand-mark brand-mark--large" aria-hidden="true">
+            <svg viewBox="0 0 96 96" role="img">
+              <path class="brand-mark__rail" d="M16 66 40 19h17L39 53h22L43 82H22l16-26H25z" />
+              <path class="brand-mark__spark" d="m58 15 22 18-15 2 13 18-30-23 16-2z" />
+            </svg>
+          </div>
+          <p class="eyebrow">Skyline circuit // online</p>
+          <h1 id="loading-title" class="game-logo">
+            <span>Neon Drift</span>
+            <small>Skyline Rush</small>
+          </h1>
+          <p class="loading-tagline">Ride the light. Own the skyline.</p>
+          <div
+            class="loading-progress"
+            role="progressbar"
+            aria-label="Loading game"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span id="loading-progress-fill"></span>
+          </div>
+          <div class="loading-meta">
+            <span id="loading-status">Calibrating skyline…</span>
+            <strong id="loading-percent">0%</strong>
+          </div>
+          <button
+            id="start-button"
+            class="button button--primary button--wide is-hidden"
+            type="button"
+            disabled
+          >
+            <span>Enter the skyline</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+          </button>
+          <p class="loading-tip">Tip: chain clean moves to raise your multiplier.</p>
+        </div>
+      </section>
+
+      <section
+        id="main-menu-screen"
+        class="screen screen--menu"
+        aria-labelledby="menu-title"
+        hidden
+      >
+        <header class="menu-header">
+          <button
+            class="brand-lockup"
+            type="button"
+            data-menu-tab="play"
+            aria-label="Open Play tab"
+          >
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 96 96">
+                <path class="brand-mark__rail" d="M16 66 40 19h17L39 53h22L43 82H22l16-26H25z" />
+                <path class="brand-mark__spark" d="m58 15 22 18-15 2 13 18-30-23 16-2z" />
+              </svg>
+            </span>
+            <span><b id="menu-title">Neon Drift</b><small>Skyline Rush</small></span>
+          </button>
+          <div class="profile-strip glass-panel" aria-label="Player profile">
+            <div class="level-badge"><small>LVL</small><b id="profile-level">1</b></div>
+            <div class="profile-progress">
+              <span
+                ><b id="profile-name">Rookie Drifter</b
+                ><small id="profile-xp-label">0 / 500 XP</small></span
+              >
+              <div class="mini-progress"><i id="profile-xp-fill"></i></div>
+            </div>
+            <div class="wallet" title="Total Prism coins">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2 20 7v10l-8 5-8-5V7z" />
+                <path d="m8 9 4-2 4 2-4 2z" />
+              </svg>
+              <b id="profile-coins">0</b>
+            </div>
+          </div>
+        </header>
+
+        <div class="menu-layout">
+          <nav class="menu-nav glass-panel" aria-label="Main menu">
+            <button
+              class="menu-tab is-selected"
+              type="button"
+              data-menu-tab="play"
+              aria-controls="panel-play"
+              aria-selected="true"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z" /></svg
+              ><span>Play</span>
+            </button>
+            <button
+              class="menu-tab"
+              type="button"
+              data-menu-tab="characters"
+              aria-controls="panel-characters"
+              aria-selected="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M5 21c.5-5 2.8-7 7-7s6.5 2 7 7" /></svg
+              ><span>Characters</span>
+            </button>
+            <button
+              class="menu-tab"
+              type="button"
+              data-menu-tab="equipment"
+              aria-controls="panel-equipment"
+              aria-selected="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m4 14 4-7h8l4 7-4 4H8z" />
+                <path d="M8 18v3m8-3v3" /></svg
+              ><span>Equipment</span>
+            </button>
+            <button
+              class="menu-tab"
+              type="button"
+              data-menu-tab="missions"
+              aria-controls="panel-missions"
+              aria-selected="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 3h12v18H6z" />
+                <path d="m9 9 2 2 4-4M9 16h6" /></svg
+              ><span>Missions</span><i id="mission-nav-badge" class="nav-badge" hidden>!</i>
+            </button>
+            <button
+              class="menu-tab"
+              type="button"
+              data-menu-tab="settings"
+              aria-controls="panel-settings"
+              aria-selected="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2" /></svg
+              ><span>Settings</span>
+            </button>
+            <button
+              class="menu-tab"
+              type="button"
+              data-menu-tab="statistics"
+              aria-controls="panel-statistics"
+              aria-selected="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 20V10m6 10V4m6 16v-7m4 7H2" /></svg
+              ><span>Statistics</span>
+            </button>
+          </nav>
+
+          <main class="menu-content glass-panel">
+            <section
+              id="panel-play"
+              class="menu-panel is-active"
+              data-menu-panel="play"
+              aria-labelledby="play-heading"
+            >
+              <div class="hero-copy">
+                <p class="eyebrow">Circuit 07 // Aurora Heights</p>
+                <h2 id="play-heading">The skyline<br /><em>never sleeps.</em></h2>
+                <p>
+                  Thread three lanes of airborne traffic, harvest Prism coins, and keep your drift
+                  alive as the city accelerates.
+                </p>
+                <button id="play-button" class="button button--primary button--hero" type="button">
+                  <span class="play-triangle" aria-hidden="true"></span>
+                  <span><small>Start a new run</small>Launch</span>
+                </button>
+                <div class="run-records">
+                  <span><small>High score</small><b id="menu-high-score">0</b></span>
+                  <span><small>Best distance</small><b id="menu-best-distance">0 m</b></span>
+                  <span><small>Hover units</small><b id="menu-hover-count">0</b></span>
+                </div>
+              </div>
+              <div class="runner-preview" aria-label="Selected runner preview">
+                <div class="preview-orbit preview-orbit--one"></div>
+                <div class="preview-orbit preview-orbit--two"></div>
+                <div id="character-preview-mount" class="character-silhouette" aria-hidden="true">
+                  <span class="silhouette-head"></span><span class="silhouette-body"></span
+                  ><span class="silhouette-arm arm-left"></span
+                  ><span class="silhouette-arm arm-right"></span
+                  ><span class="silhouette-leg leg-left"></span
+                  ><span class="silhouette-leg leg-right"></span>
+                </div>
+                <span id="equipped-character-label" class="preview-label">Nova // Equipped</span>
+              </div>
+            </section>
+
+            <section
+              id="panel-characters"
+              class="menu-panel"
+              data-menu-panel="characters"
+              aria-labelledby="characters-heading"
+              hidden
+            >
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Runner roster</p>
+                  <h2 id="characters-heading">Characters</h2>
+                </div>
+                <p>
+                  Each runner is an original skyline courier. Cosmetics never alter performance.
+                </p>
+              </div>
+              <div
+                id="character-list"
+                class="card-grid card-grid--characters"
+                aria-live="polite"
+              ></div>
+              <div id="character-detail" class="selection-detail">
+                <div>
+                  <small>Selected runner</small><b id="character-detail-name">Nova</b>
+                  <p id="character-detail-description">
+                    A fearless courier tuned to the pulse of Aurora Heights.
+                  </p>
+                </div>
+                <button
+                  id="character-action-button"
+                  class="button button--secondary"
+                  type="button"
+                  data-character-id="nova"
+                  data-mode="equipped"
+                  disabled
+                >
+                  Equipped
+                </button>
+              </div>
+            </section>
+
+            <section
+              id="panel-equipment"
+              class="menu-panel"
+              data-menu-panel="equipment"
+              aria-labelledby="equipment-heading"
+              hidden
+            >
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Loadout bay</p>
+                  <h2 id="equipment-heading">Equipment</h2>
+                </div>
+                <p>Choose a hover unit and visual trail before you enter the circuit.</p>
+              </div>
+              <div class="equipment-summary">
+                <div class="equipment-hero">
+                  <div class="hover-device-art" aria-hidden="true"><span></span><i></i></div>
+                  <div>
+                    <small>Available units</small><strong id="equipment-hover-count">0</strong>
+                    <p>A deployed Fluxboard absorbs one impact before shattering.</p>
+                  </div>
+                </div>
+                <button
+                  id="buy-hover-button"
+                  class="button button--secondary"
+                  type="button"
+                  data-cost="500"
+                >
+                  Buy unit <span>500 ◈</span>
+                </button>
+              </div>
+              <h3 class="section-title">Fluxboard shells</h3>
+              <div id="equipment-list" class="card-grid card-grid--equipment"></div>
+            </section>
+
+            <section
+              id="panel-missions"
+              class="menu-panel"
+              data-menu-panel="missions"
+              aria-labelledby="missions-heading"
+              hidden
+            >
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Courier uplink</p>
+                  <h2 id="missions-heading">Active missions</h2>
+                </div>
+                <p>
+                  Complete objectives across runs. Finished contracts are replaced automatically.
+                </p>
+              </div>
+              <div id="mission-list" class="mission-list" aria-live="polite"></div>
+            </section>
+
+            <section
+              id="panel-settings"
+              class="menu-panel"
+              data-menu-panel="settings"
+              aria-labelledby="settings-heading"
+              hidden
+            >
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">System tuning</p>
+                  <h2 id="settings-heading">Settings</h2>
+                </div>
+                <p>Changes apply instantly and are saved on this device.</p>
+              </div>
+              <form id="settings-form" class="settings-grid">
+                <label class="setting-row" for="music-volume">
+                  <span><b>Music</b><small>Skyline soundtrack volume</small></span>
+                  <span class="range-wrap"
+                    ><input
+                      id="music-volume"
+                      name="musicVolume"
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value="0.65"
+                    /><output for="music-volume">65%</output></span
+                  >
+                </label>
+                <label class="setting-row" for="sfx-volume">
+                  <span><b>Sound effects</b><small>Moves, pickups, and impacts</small></span>
+                  <span class="range-wrap"
+                    ><input
+                      id="sfx-volume"
+                      name="sfxVolume"
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value="0.8"
+                    /><output for="sfx-volume">80%</output></span
+                  >
+                </label>
+                <label class="setting-row" for="swipe-sensitivity">
+                  <span><b>Swipe sensitivity</b><small>Gesture distance required</small></span>
+                  <span class="range-wrap"
+                    ><input
+                      id="swipe-sensitivity"
+                      name="swipeSensitivity"
+                      type="range"
+                      min="20"
+                      max="100"
+                      step="5"
+                      value="45"
+                    /><output for="swipe-sensitivity">45 px</output></span
+                  >
+                </label>
+                <label class="setting-row" for="graphics-quality">
+                  <span><b>Graphics quality</b><small>Resolution and scene detail</small></span>
+                  <select id="graphics-quality" name="graphicsQuality">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high" selected>High</option>
+                  </select>
+                </label>
+                <label class="setting-row" for="camera-shake-toggle">
+                  <span><b>Camera shake</b><small>Motion feedback on impacts</small></span>
+                  <input
+                    id="camera-shake-toggle"
+                    class="toggle"
+                    name="cameraShake"
+                    type="checkbox"
+                    checked
+                  />
+                </label>
+                <label class="setting-row" for="shadows-toggle">
+                  <span><b>Dynamic shadows</b><small>Disable to improve performance</small></span>
+                  <input
+                    id="shadows-toggle"
+                    class="toggle"
+                    name="shadows"
+                    type="checkbox"
+                    checked
+                  />
+                </label>
+                <label class="setting-row" for="particles-toggle">
+                  <span><b>Particle effects</b><small>Coin bursts and speed trails</small></span>
+                  <input
+                    id="particles-toggle"
+                    class="toggle"
+                    name="particles"
+                    type="checkbox"
+                    checked
+                  />
+                </label>
+                <label class="setting-row" for="language-select">
+                  <span><b>Language</b><small>Interface language</small></span>
+                  <select id="language-select" name="language" aria-label="Interface language">
+                    <option value="en">English</option>
+                  </select>
+                </label>
+                <div class="settings-actions">
+                  <button
+                    id="settings-back-button"
+                    class="button button--primary"
+                    type="button"
+                    hidden
+                  >
+                    Back to paused run
+                  </button>
+                  <button id="fullscreen-button" class="button button--secondary" type="button">
+                    Toggle fullscreen
+                  </button>
+                  <button id="reset-save-button" class="button button--danger" type="button">
+                    Reset save data
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section
+              id="panel-statistics"
+              class="menu-panel"
+              data-menu-panel="statistics"
+              aria-labelledby="statistics-heading"
+              hidden
+            >
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Lifetime telemetry</p>
+                  <h2 id="statistics-heading">Statistics</h2>
+                </div>
+                <p>Your complete history on this device.</p>
+              </div>
+              <div id="statistics-grid" class="statistics-grid">
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20 12 4l7 16-7-4z" /></svg
+                  ><small>Total runs</small><b data-stat="totalRuns">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 17 8 7l4 6 3-5 6 9" /></svg
+                  ><small>Total distance</small><b data-stat="totalDistance">0 m</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 2 20 7v10l-8 5-8-5V7z" /></svg
+                  ><small>Coins collected</small><b data-stat="totalCoins">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 17 5-5 3 3 7-9" /></svg
+                  ><small>Highest score</small><b data-stat="highestScore">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M7 8l5-5 5 5" /></svg
+                  ><small>Total jumps</small><b data-stat="totalJumps">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 14h16M8 10l-4 4 4 4" /></svg
+                  ><small>Total slides</small><b data-stat="totalSlides">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m4 8 4-4 4 4m8 8-4 4-4-4" /></svg
+                  ><small>Lane changes</small><b data-stat="totalLaneChanges">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M13 2 5 13h6l-1 9 9-13h-6z" /></svg
+                  ><small>Power-ups</small><b data-stat="totalPowerUps">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z" /></svg
+                  ><small>Crashes</small><b data-stat="totalCrashes">0</b>
+                </article>
+                <article>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" /></svg
+                  ><small>Longest run</small><b data-stat="longestRun">0 s</b>
+                </article>
+              </div>
+            </section>
+          </main>
+        </div>
+        <footer class="menu-footer">
+          <span>Move <kbd>A</kbd><kbd>D</kbd></span
+          ><span>Jump <kbd>W</kbd> / <kbd>Space</kbd></span
+          ><span>Slide <kbd>S</kbd></span
+          ><span>Pause <kbd>Esc</kbd></span
+          ><span class="version-label">v1.0 // PWA READY</span>
+        </footer>
+      </section>
+
+      <section id="hud" class="hud" aria-label="Run status" hidden>
+        <div class="hud-top">
+          <div class="hud-metrics">
+            <div class="hud-score"><small>Score</small><strong id="hud-score">0</strong></div>
+            <div class="hud-stat">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2 20 7v10l-8 5-8-5V7z" /></svg
+              ><span><small>Coins</small><b id="hud-coins">0</b></span>
+            </div>
+            <div class="hud-stat hud-stat--desktop">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17 9 7l4 7 3-5 4 8" /></svg
+              ><span><small>Distance</small><b id="hud-distance">0 m</b></span>
+            </div>
+          </div>
+          <div class="hud-center">
+            <div id="hud-multiplier" class="multiplier-chip">
+              <span>x</span><b>1</b><small>Multiplier</small>
+            </div>
+            <div class="speed-meter" aria-label="Current speed">
+              <i id="hud-speed-fill"></i><span id="hud-speed">0 km/h</span>
+            </div>
+          </div>
+          <button id="pause-button" class="icon-button" type="button" aria-label="Pause game">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zm7 0h3v14h-3z" /></svg>
+          </button>
+        </div>
+        <div id="power-up-container" class="power-up-stack" aria-label="Active power-ups"></div>
+        <div id="run-mission-progress" class="run-mission" hidden>
+          <span class="run-mission__icon">◎</span
+          ><span
+            ><small>Mission progress</small><b id="run-mission-label">Collect Prism coins</b
+            ><i><em id="run-mission-fill"></em></i></span
+          ><strong id="run-mission-value">0 / 100</strong>
+        </div>
+        <button
+          id="hover-device-button"
+          class="hover-action"
+          type="button"
+          aria-label="Activate Fluxboard hover device"
+        >
+          <span class="hover-action__icon"
+            ><svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M5 20 11 9h10l6 11-6 5H11z" />
+              <path d="M10 25v3m12-3v3" /></svg
+          ></span>
+          <span><small>Deploy</small><b>Fluxboard</b></span
+          ><strong id="hud-hover-count">0</strong>
+        </button>
+        <div class="mobile-gesture-hint" aria-hidden="true">
+          <span>←</span><span>Swipe to move</span><span>↑</span>
+        </div>
+      </section>
+
+      <section
+        id="countdown-screen"
+        class="screen screen--countdown"
+        aria-live="assertive"
+        aria-atomic="true"
+        hidden
+      >
+        <div class="countdown-track" aria-hidden="true"></div>
+        <div id="countdown-value" class="countdown-value">3</div>
+        <p id="countdown-label">Get ready</p>
+      </section>
+
+      <section
+        id="pause-screen"
+        class="screen screen--modal"
+        aria-labelledby="pause-heading"
+        hidden
+      >
+        <div class="modal-card glass-panel">
+          <p class="eyebrow">Run suspended</p>
+          <h2 id="pause-heading">Paused</h2>
+          <div class="pause-summary">
+            <span><small>Score</small><b id="pause-score">0</b></span
+            ><span><small>Distance</small><b id="pause-distance">0 m</b></span>
+          </div>
+          <div class="modal-actions">
+            <button id="resume-button" class="button button--primary button--wide" type="button">
+              Resume run
+            </button>
+            <button
+              id="pause-restart-button"
+              class="button button--secondary button--wide"
+              type="button"
+            >
+              Restart
+            </button>
+            <button
+              id="pause-settings-button"
+              class="button button--ghost button--wide"
+              type="button"
+            >
+              Settings
+            </button>
+            <button id="pause-menu-button" class="button button--ghost button--wide" type="button">
+              Main menu
+            </button>
+          </div>
+          <p class="key-hint"><kbd>Esc</kbd> to resume</p>
+        </div>
+      </section>
+
+      <section
+        id="game-over-screen"
+        class="screen screen--modal game-over"
+        aria-labelledby="game-over-heading"
+        hidden
+      >
+        <div class="modal-card modal-card--wide glass-panel">
+          <p class="eyebrow">Circuit ended</p>
+          <h2 id="game-over-heading">Run complete</h2>
+          <div id="new-record-badge" class="record-badge" hidden>New skyline record</div>
+          <div class="final-score">
+            <small>Final score</small><strong id="final-score">0</strong
+            ><span>High score <b id="final-high-score">0</b></span>
+          </div>
+          <div class="result-grid">
+            <span><small>Distance</small><b id="final-distance">0 m</b></span>
+            <span><small>Coins</small><b id="final-coins">0</b></span>
+            <span><small>XP earned</small><b id="final-xp">+0</b></span>
+            <span><small>Multiplier</small><b id="final-multiplier">x1</b></span>
+          </div>
+          <div id="game-over-missions" class="game-over-missions" hidden>
+            <small>Mission progress</small>
+            <div id="game-over-mission-list"></div>
+          </div>
+          <div class="modal-actions modal-actions--row">
+            <button id="game-over-menu-button" class="button button--secondary" type="button">
+              Main menu
+            </button>
+            <button id="game-over-restart-button" class="button button--primary" type="button">
+              Run again <kbd>R</kbd>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div
+        id="toast-region"
+        class="toast-region"
+        role="status"
+        aria-live="polite"
+        aria-relevant="additions"
+      ></div>
+      <div id="score-popups" class="score-popups" aria-live="off"></div>
+      <div id="level-up-overlay" class="level-up-overlay" hidden aria-live="assertive">
+        <span>Level up</span><b id="level-up-value">2</b><small>Skyline access expanded</small>
+      </div>
+      <div class="orientation-notice" aria-hidden="true">
+        <span>↻</span><b>Rotate for a wider skyline</b
+        ><small>Portrait mode is supported too.</small>
+      </div>
+      <div
+        id="a11y-announcer"
+        class="visually-hidden"
+        aria-live="assertive"
+        aria-atomic="true"
+      ></div>
+    </div>
+
+    <noscript
+      ><div class="noscript-message">
+        Neon Drift requires JavaScript to render the skyline.
+      </div></noscript
+    >
+    <script type="module" src="./src/main.ts"></script>
+    <script type="module" src="./src/ui/registerServiceWorker.ts"></script>
+  </body>
+</html>

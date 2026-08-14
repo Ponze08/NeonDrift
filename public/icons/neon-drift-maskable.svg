@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Neon Drift maskable icon">
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#202465"/><stop offset=".58" stop-color="#090C25"/><stop offset="1" stop-color="#040611"/></radialGradient>
+    <linearGradient id="rail" x1="162" y1="133" x2="350" y2="389"><stop stop-color="#B7FFFF"/><stop offset=".5" stop-color="#45F4FF"/><stop offset="1" stop-color="#6377FF"/></linearGradient>
+    <linearGradient id="spark" x1="285" y1="118" x2="380" y2="290"><stop stop-color="#FF96EA"/><stop offset="1" stop-color="#FF4FD8"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="188" fill="none" stroke="#45F4FF" stroke-opacity=".12" stroke-width="3"/>
+  <circle cx="256" cy="256" r="151" fill="#8D5BFF" fill-opacity=".055"/>
+  <path d="m145 337 88-202h69l-67 136h83l-94 111h-79l76-90h-76z" fill="url(#rail)"/>
+  <path d="m287 111 101 82-66 7 57 82-135-105 72-10z" fill="url(#spark)"/>
+  <path d="M108 408h296" stroke="#45F4FF" stroke-opacity=".38" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="109" cy="408" r="9" fill="#45F4FF"/><circle cx="403" cy="408" r="9" fill="#FF4FD8"/>
+</svg>
